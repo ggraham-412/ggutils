@@ -32,10 +32,10 @@ public class LogImpl extends DefaultLogger {
 	}
 
 	@Override
-	protected void doLog(String source, String message, int setLevel, int logLevel) {
+	protected void doLog(String source, String message, int setLevel, int logLevel, String sLogLevel) {
 		if ( logLevel >= setLevel) {
     	    StringBuilder builder = new StringBuilder();
-	        builder.append(m_dateFormat.format(new Date())).append(" ");
+	        builder.append(m_dateFormat.format(new Date())).append(" ").append(sLogLevel).append(" ");
 	        builder.append(source).append(": ").append(message);
 	        System.out.println(builder.toString());
 		}		
