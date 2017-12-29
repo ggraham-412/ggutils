@@ -1,5 +1,15 @@
 package org.ggraham.ggutils.test;
 
+/*
+ * 
+ * Apache License 2.0 
+ * 
+ * Copyright (c) [2017] [Gregory Graham]
+ * 
+ * See LICENSE.txt for details.
+ * 
+ */
+
 import java.text.SimpleDateFormat;
 
 import org.ggraham.ggutils.LogLevel;

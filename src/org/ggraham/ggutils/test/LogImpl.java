@@ -1,5 +1,15 @@
 package org.ggraham.ggutils.test;
 
+/*
+ * 
+ * Apache License 2.0 
+ * 
+ * Copyright (c) [2017] [Gregory Graham]
+ * 
+ * See LICENSE.txt for details.
+ * 
+ */
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -16,6 +26,10 @@ public class LogImpl extends DefaultLogger {
 	}
 
 	public LogImpl() {
+		m_dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	}
+
+	public LogImpl(int logLevel) {
 		m_dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	}
 
