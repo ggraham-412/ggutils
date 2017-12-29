@@ -1,4 +1,4 @@
-package org.ggraham.ggutils.test;
+package org.ggraham.ggutils;
 
 /*
  * 
@@ -12,8 +12,6 @@ package org.ggraham.ggutils.test;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import org.ggraham.ggutils.DefaultLogger;
 
 public class LogImpl extends DefaultLogger {
 

@@ -12,6 +12,7 @@ package org.ggraham.ggutils.test;
 
 import java.text.SimpleDateFormat;
 
+import org.ggraham.ggutils.LogImpl;
 import org.ggraham.ggutils.LogLevel;
 
 
