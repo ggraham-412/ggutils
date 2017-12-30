@@ -1,4 +1,4 @@
-package org.ggraham.ggutils;
+package org.ggraham.ggutils.logging;
 
 /*
  * 
