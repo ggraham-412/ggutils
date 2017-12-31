@@ -5,6 +5,8 @@ Java 1.8 required.
 This project contains classes that are useful utility classes for use in
 other libraries. 
 
+This code is provided for educational purposes only.  No warranty is expressed or implied.  Use at your own risk.
+
 ## logging
 
 The logging package provides a stub logging service for use within a library 
