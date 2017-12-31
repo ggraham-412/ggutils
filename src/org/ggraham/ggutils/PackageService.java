@@ -30,29 +30,28 @@ public class PackageService {
 	
 	private ILogger m_loggerService;
 	public ILogger getLogImpl() { return m_loggerService; } 
+	public void setLogImpl(ILogger logger) { m_loggerService = logger; } 
 	
-	private PackageService(ILogger logImpl) {
+	private PackageService() {
 		// default logger - stdout
-		m_loggerService = logImpl == null ? new LogImpl() : logImpl;
+		m_loggerService = new LogImpl();
 		m_loggerService.setLogLevel(LogLevel.BASIC);
 	}
+
+	
 	
 	private static volatile PackageService s_packageService;
 	private static Object s_lock = new Object();
 	
-	public static PackageService getPackageService(ILogger logImpl) {		
+	public static PackageService getPackageService() {		
 		if ( s_packageService == null ) {
 			synchronized(s_lock) {
 				if ( s_packageService == null ) {
-					s_packageService = new PackageService(logImpl);
+					s_packageService = new PackageService();
 				}				
 			}
 		}
 		return s_packageService;
-	}
-	
-	public static PackageService getPackageService() {				
-		return getPackageService(null);
 	}
 	
 	public static ILogger getLog() {
