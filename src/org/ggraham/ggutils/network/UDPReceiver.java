@@ -116,7 +116,10 @@ public class UDPReceiver  {
 	    
 	    public void stop() {
 	    	synchronized (m_lock) {
-				if (!m_isRunning) return;
+				if (!m_isRunning) {
+    				PackageService.getLog().logWarning("NetworkListener.stop", "Already stopping");
+					return;
+				}
 				m_isRunning = false;	
 	    	}
 

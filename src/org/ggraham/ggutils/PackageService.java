@@ -35,7 +35,7 @@ public class PackageService {
 	private PackageService() {
 		// default logger - stdout
 		m_loggerService = new LogImpl();
-		m_loggerService.setLogLevel(LogLevel.BASIC);
+		m_loggerService.setLogLevel(LogLevel.SEVERE + 1);  // turn off logging by default
 	}
 
 	
