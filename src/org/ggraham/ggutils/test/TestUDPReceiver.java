@@ -49,6 +49,8 @@ public class TestUDPReceiver {
 	static int numRecv = 0;
 	static int[] vals = null;
 	static boolean print = false;
+	static Object locker = new Object();
+	static int counter = 0;
 
 	public static void main(String[] args) throws InterruptedException, IOException {
 
@@ -103,6 +105,9 @@ public class TestUDPReceiver {
     				int seq = Integer.parseInt(obj[0].toString());
 	    			vals[seq] = 1;
 				}
+				synchronized (locker) {
+					counter++;
+				}
 				if ( print ) {
 					StringBuilder builder = new StringBuilder();
 					for ( int jj=0; jj<obj.length; jj++ ) {
@@ -113,10 +118,14 @@ public class TestUDPReceiver {
 				return true;
 			}
 		});
+		recv.setBufferSize(1024);
+		recv.setPoolInitSize(512);
+		recv.setPoolMaxSize(1024);
 		recv.start();
 		Thread.currentThread().sleep(wait);
 		recv.stop();
 
+	    System.out.println("Got " + counter + " packets");			
 		if ( numRecv > 0 ) {
     		boolean missing = false;
 	    	for (int ii=0; ii<vals.length; ii++) {

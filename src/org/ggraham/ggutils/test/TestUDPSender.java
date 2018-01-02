@@ -124,6 +124,7 @@ public class TestUDPSender {
 		System.out.println("Generates and sends random packet data");
 		System.out.println("");
 		System.out.println("-c N  (optional) generate N packets and store in file given in -f");
+		System.out.println("-d d  (optional) delay between packets in milliseconds");
 		System.out.println("-f f  (required) reads packets from this csv file, one packet per row");
 		System.out.println("-i a  (optional) ip address, default localhost");
 		System.out.println("-r p  (optional) specifies port number, default 5555");
@@ -142,7 +143,7 @@ public class TestUDPSender {
 		System.out.println("");
 	}
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, InterruptedException {
 
 		PackageService.getLog().setLogLevel(LogLevel.BASIC);
 		ArrayList<Object[]> values = new ArrayList<Object[]>();
@@ -155,6 +156,7 @@ public class TestUDPSender {
 		int numGen = 0;
 		int port = 5555;
 		String address = "localhost";
+		int delay = 1;
 
 		int i = 0;
 		try {
@@ -164,6 +166,8 @@ public class TestUDPSender {
 					filename = args[i++];
 				} else if (currentArg.equals("-c")) {
 					numGen = Integer.parseInt(args[i++]);
+				} else if (currentArg.equals("-d")) {
+					delay = Integer.parseInt(args[i++]);
 				} else if (currentArg.equals("-t")) {
 					fields.add(new PacketDecoder.PacketFieldConfig(FieldType.valueOf(args[i++])));
 				} else if (currentArg.equals("-s")) {
@@ -242,11 +246,15 @@ public class TestUDPSender {
 		}
 
 		UDPSender sender = new UDPSender(address, port);
+		int counter = 0;
 		for (Object[] toSend : values) {
 			PoolItem<ByteBuffer> item = sender.getByteBuffer();
 			decoder.EncodePacket(toSend, item.getPoolItem());
 			sender.send(item);
+			if ( delay > 0 ) Thread.currentThread().sleep(delay);
+			counter++;
 		}
+		System.out.println("Sent " + counter);
 
 	}
 

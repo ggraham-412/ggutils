@@ -185,7 +185,7 @@ public class PacketDecoder {
 	 *            : packet buffer
 	 * 
 	 */
-	public void EncodePacket(Object[] fields, ByteBuffer packet) {
+	public boolean EncodePacket(Object[] fields, ByteBuffer packet) {
 		for (int i = 0; i < m_structure.size(); i++) {
 			try {
 				switch (m_structure.get(i).getFieldType()) {
@@ -213,12 +213,14 @@ public class PacketDecoder {
 					packet.put(buffer);
 					break;
 				}
-			} catch (Exception ex) {
+			} catch (Exception ex) {				
 				PackageService.getLog().logError("PacketDecoder.EncodePacket",
 						"Caught exception converting field " + i + ", " + m_structure.get(i).getFieldType().toString()
 								+ ", value " + fields[i].getClass() + ", " + fields[i] + ": " + ex);
+				return false;
 			}
 		}
+		return true;
 	}
 
 	/**
