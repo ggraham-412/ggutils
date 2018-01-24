@@ -26,7 +26,8 @@ import org.ggraham.ggutils.PackageService;
 import org.ggraham.ggutils.logging.LogLevel;
 import org.ggraham.ggutils.message.IHandleMessage;
 import org.ggraham.ggutils.message.PacketDecoder;
-import org.ggraham.ggutils.message.PacketDecoder.FieldType;
+import org.ggraham.ggutils.message.PacketFieldConfig;
+import org.ggraham.ggutils.message.FieldType;
 import org.ggraham.ggutils.network.UDPSender;
 import org.ggraham.ggutils.objectpool.ObjectPool.PoolItem;
 
@@ -62,7 +63,7 @@ public class TestUDPSender {
 
 	// Creates a csv file with test data in it.
 	private static void createTestData(String filename, int nRows, boolean seq,
-			PacketDecoder.PacketFieldConfig[] fields) throws IOException {
+			PacketFieldConfig[] fields) throws IOException {
 		FileWriter file = new FileWriter(filename);
 		BufferedWriter writer = new BufferedWriter(file);
 		Random r = new Random();
@@ -150,7 +151,7 @@ public class TestUDPSender {
 		PacketDecoder decoder = new PacketDecoder();
 
 		// Options
-		ArrayList<PacketDecoder.PacketFieldConfig> fields = new ArrayList<PacketDecoder.PacketFieldConfig>();
+		ArrayList<PacketFieldConfig> fields = new ArrayList<PacketFieldConfig>();
 		boolean seq = false;
 		String filename = "";
 		int numGen = 0;
@@ -169,7 +170,7 @@ public class TestUDPSender {
 				} else if (currentArg.equals("-d")) {
 					delay = Integer.parseInt(args[i++]);
 				} else if (currentArg.equals("-t")) {
-					fields.add(new PacketDecoder.PacketFieldConfig(FieldType.valueOf(args[i++])));
+					fields.add(new PacketFieldConfig(FieldType.valueOf(args[i++])));
 				} else if (currentArg.equals("-s")) {
 					seq = true;
 				} else if (currentArg.equals("-u")) {
@@ -186,7 +187,7 @@ public class TestUDPSender {
 		}
 
 		if (seq) {
-			fields.add(0, new PacketDecoder.PacketFieldConfig(FieldType.INTEGER));
+			fields.add(0, new PacketFieldConfig(FieldType.INTEGER));
 		}
 
 		if (filename.isEmpty()) {
@@ -198,7 +199,7 @@ public class TestUDPSender {
 				System.out.println("No fields given");
 				System.exit(1);
 			}
-			createTestData(filename, numGen, seq, fields.toArray(new PacketDecoder.PacketFieldConfig[] {}));
+			createTestData(filename, numGen, seq, fields.toArray(new PacketFieldConfig[] {}));
 		}
 
 		FileReader file = new FileReader(filename);
@@ -209,7 +210,7 @@ public class TestUDPSender {
 			String header = reader.readLine();
 			String[] hParts = header.split(",");
 			for (int k = 0; k < hParts.length; k++) {
-				PacketDecoder.PacketFieldConfig ft = new PacketDecoder.PacketFieldConfig(
+				PacketFieldConfig ft = new PacketFieldConfig(
 						FieldType.valueOf(hParts[k].trim()));
 				decoder.addField(ft);
 				fields.add(ft);

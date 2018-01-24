@@ -12,8 +12,6 @@ package org.ggraham.ggutils.message;
 
 import java.nio.ByteBuffer;
 
-import org.ggraham.ggutils.message.PacketDecoder.PacketFieldConfig;
-
 public interface IPacketDecoder {
 
 	/**

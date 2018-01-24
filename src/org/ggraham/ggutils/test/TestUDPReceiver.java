@@ -20,7 +20,8 @@ import org.ggraham.ggutils.PackageService;
 import org.ggraham.ggutils.logging.LogLevel;
 import org.ggraham.ggutils.message.IHandleMessage;
 import org.ggraham.ggutils.message.PacketDecoder;
-import org.ggraham.ggutils.message.PacketDecoder.FieldType;
+import org.ggraham.ggutils.message.FieldType;
+import org.ggraham.ggutils.message.PacketFieldConfig;
 import org.ggraham.ggutils.network.UDPReceiver;
 
 public class TestUDPReceiver {
@@ -54,7 +55,7 @@ public class TestUDPReceiver {
 
 	public static void main(String[] args) throws InterruptedException, IOException {
 
-	    ArrayList<PacketDecoder.PacketFieldConfig> fields = new ArrayList<PacketDecoder.PacketFieldConfig>();
+	    ArrayList<PacketFieldConfig> fields = new ArrayList<PacketFieldConfig>();
 	    PacketDecoder decoder = new PacketDecoder();
 
 	    int port = 5555;
@@ -67,7 +68,7 @@ public class TestUDPReceiver {
 	    	if (currentArg.equals("-c")) {
 	    		numRecv = Integer.parseInt(args[i++]);
         	} else if (currentArg.equals("-t")) {
-        		fields.add(new PacketDecoder.PacketFieldConfig(FieldType.valueOf(args[i++])));
+        		fields.add(new PacketFieldConfig(FieldType.valueOf(args[i++])));
         	} else if (currentArg.equals("-p")) {
 	    		print = true;
         	} else if (currentArg.equals("-u")) {
@@ -85,7 +86,7 @@ public class TestUDPReceiver {
 	    }
 
 	    if ( numRecv > 0 ) {
-	    	fields.add(0, new PacketDecoder.PacketFieldConfig(FieldType.INTEGER));
+	    	fields.add(0, new PacketFieldConfig(FieldType.INTEGER));
 	    }
 	    
 	    for ( int m=0; m < fields.size(); m++ ) {
