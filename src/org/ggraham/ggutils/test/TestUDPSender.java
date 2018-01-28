@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -33,9 +34,9 @@ import org.ggraham.ggutils.objectpool.ObjectPool.PoolItem;
 
 public class TestUDPSender {
 
-	// Methods to generate random fields and add to a Strung Builder
+	// Methods to generate random fields and add to a String Builder
 	private static void randomString(Random r, StringBuilder builder, int minlen, int maxlen) {
-		int len = minlen + r.nextInt(maxlen);
+		int len = minlen + (maxlen<=0 ? 0 : r.nextInt(maxlen));
 		for (int i = 0; i < len; i++) {
 			builder.append((char) ((int) ('A') + r.nextInt(26)));
 		}
@@ -71,7 +72,7 @@ public class TestUDPSender {
 		try {
 			StringBuilder hbuilder = new StringBuilder();
 			for (int j = 0; j < fields.length; j++) {
-				hbuilder.append(fields[j].getFieldType().toString()).append(",");
+				hbuilder.append(fields[j].toString()).append(",");
 			}
 			hbuilder.delete(hbuilder.length() - 1, hbuilder.length());
 			writer.write(hbuilder.toString());
@@ -81,8 +82,13 @@ public class TestUDPSender {
 				for (int j = 0; j < fields.length; j++) {
 					switch (fields[j].getFieldType()) {
 					case STRING:
-						randomString(r, builder, 10, 10);
-						builder.append(",");
+					case BINARY:
+						if ( fields[j].isFixedLength() ) {
+    						randomString(r, builder, fields[j].getFixedLength(), 0);
+						} else {
+    						randomString(r, builder, 10, 10);
+						}
+						builder.append(",");						
 						break;
 					case INTEGER:
 						if (seq && j == 0) {
@@ -170,7 +176,7 @@ public class TestUDPSender {
 				} else if (currentArg.equals("-d")) {
 					delay = Integer.parseInt(args[i++]);
 				} else if (currentArg.equals("-t")) {
-					fields.add(new PacketFieldConfig(FieldType.valueOf(args[i++])));
+					fields.add(PacketFieldConfig.fromString(args[i++]));
 				} else if (currentArg.equals("-s")) {
 					seq = true;
 				} else if (currentArg.equals("-u")) {
@@ -187,7 +193,7 @@ public class TestUDPSender {
 		}
 
 		if (seq) {
-			fields.add(0, new PacketFieldConfig(FieldType.INTEGER));
+			fields.add(0, PacketFieldConfig.getInteger());
 		}
 
 		if (filename.isEmpty()) {
@@ -210,8 +216,7 @@ public class TestUDPSender {
 			String header = reader.readLine();
 			String[] hParts = header.split(",");
 			for (int k = 0; k < hParts.length; k++) {
-				PacketFieldConfig ft = new PacketFieldConfig(
-						FieldType.valueOf(hParts[k].trim()));
+				PacketFieldConfig ft = PacketFieldConfig.fromString(hParts[k].trim());
 				decoder.addField(ft);
 				fields.add(ft);
 			}
@@ -232,6 +237,9 @@ public class TestUDPSender {
 						break;
 					case DOUBLE:
 						vals[k] = Double.parseDouble(vParts[k]);
+						break;
+					case BINARY:
+						vals[k] = vParts[k].getBytes(Charset.forName("US-ASCII"));
 						break;
 					default:
 						vals[k] = vParts[k];

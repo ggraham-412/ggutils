@@ -68,7 +68,7 @@ public class TestUDPReceiver {
 	    	if (currentArg.equals("-c")) {
 	    		numRecv = Integer.parseInt(args[i++]);
         	} else if (currentArg.equals("-t")) {
-        		fields.add(new PacketFieldConfig(FieldType.valueOf(args[i++])));
+        		fields.add(PacketFieldConfig.fromString(args[i++]));
         	} else if (currentArg.equals("-p")) {
 	    		print = true;
         	} else if (currentArg.equals("-u")) {
@@ -86,7 +86,7 @@ public class TestUDPReceiver {
 	    }
 
 	    if ( numRecv > 0 ) {
-	    	fields.add(0, new PacketFieldConfig(FieldType.INTEGER));
+	    	fields.add(0, PacketFieldConfig.getInteger());
 	    }
 	    
 	    for ( int m=0; m < fields.size(); m++ ) {
@@ -112,7 +112,12 @@ public class TestUDPReceiver {
 				if ( print ) {
 					StringBuilder builder = new StringBuilder();
 					for ( int jj=0; jj<obj.length; jj++ ) {
-						builder.append(obj[jj].toString()).append("  ");
+						if ( fields.get(jj).getFieldType() == FieldType.BINARY ) {
+							builder.append(new String((byte[])obj[jj], 
+									Charset.forName("US-ASCII"))).append("  ");
+						} else {
+							builder.append(obj[jj].toString()).append("  ");							
+						}
 					}
 					System.out.println(builder.toString());
 				}
@@ -120,8 +125,8 @@ public class TestUDPReceiver {
 			}
 		});
 		recv.setBufferSize(1024);
-		recv.setPoolInitSize(512);
-		recv.setPoolMaxSize(1024);
+		recv.setPoolInitSize(16384);
+		recv.setPoolMaxSize(32768);
 		recv.start();
 		Thread.currentThread().sleep(wait);
 		recv.stop();
