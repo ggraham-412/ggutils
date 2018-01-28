@@ -128,6 +128,15 @@ public final class PacketFieldConfig {
 	public String toString() {
 		return m_strValue;
 	}
+	
+	public static boolean isSimpleType(String typeName) {
+		if ( typeName == null || typeName.isEmpty() ) return false;
+		if ( typeName.equals("INTEGER") ) return true;
+		if ( typeName.equals("LONG") ) return true;
+		if ( typeName.equals("FLOAT") ) return true;
+		if ( typeName.equals("DOUBLE") ) return true;
+		return false;
+	}
 
 	private static final Pattern s_pattern = 
 			Pattern.compile("(STRING|INTEGER|BINARY|FLOAT|DOUBLE|LONG)(\\((R|V|\\d+)(;([\\w,-]+))?\\))?$");
