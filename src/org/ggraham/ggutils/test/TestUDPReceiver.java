@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 
 import org.ggraham.ggutils.PackageService;
 import org.ggraham.ggutils.logging.LogLevel;
@@ -30,6 +32,7 @@ public class TestUDPReceiver {
 		System.out.println("Receives and decodes UDP packet data");
 		System.out.println("");
 		System.out.println("-c N  (optional) assumes first field is a sequence and checks for N packets");
+		System.out.println("-g    (optional) packet data contains repeating groups");
 		System.out.println("-p    (optional) print packet data");
 		System.out.println("-r p  (optional) specifies port number p, default 5555");
 		System.out.println("-t t  (required if -p, ignored if ! -p) adds a field of type t to the packet");
@@ -50,9 +53,12 @@ public class TestUDPReceiver {
 	static int numRecv = 0;
 	static int[] vals = null;
 	static boolean print = false;
+	static boolean repeating = false;
 	static Object locker = new Object();
 	static int counter = 0;
 
+	static ArrayList dates = new ArrayList();
+	
 	public static void main(String[] args) throws InterruptedException, IOException {
 
 	    ArrayList<PacketFieldConfig> fields = new ArrayList<PacketFieldConfig>();
@@ -71,6 +77,8 @@ public class TestUDPReceiver {
         		fields.add(PacketFieldConfig.fromString(args[i++]));
         	} else if (currentArg.equals("-p")) {
 	    		print = true;
+        	} else if (currentArg.equals("-g")) {
+	    		repeating = true;
         	} else if (currentArg.equals("-u")) {
 	    		usage();
 	    	} else if (currentArg.equals("-r")) {
@@ -100,6 +108,7 @@ public class TestUDPReceiver {
 			@Override
 			public boolean handleMessage(ByteBuffer buffer) {		
 				boolean doStop = false;
+				while ( buffer.hasRemaining() ) {
 				Object[] obj = new Object[fields.size()];
 				decoder.DecodePacket(buffer, obj);
 				if ( numRecv > 0 ) {
@@ -116,11 +125,17 @@ public class TestUDPReceiver {
 							builder.append(new String((byte[])obj[jj], 
 									Charset.forName("US-ASCII"))).append("  ");
 						} else {
-							builder.append(obj[jj].toString()).append("  ");							
+							if ( fields.get(jj).getFieldType() == FieldType.LONG && 
+									dates.contains(jj)) {
+    							builder.append((new Date((long)obj[jj])).toString()).append("  ");								
+							}
+							else {
+    							builder.append(obj[jj].toString()).append("  ");
+							}
 						}
 					}
 					System.out.println(builder.toString());
-				}
+				}}
 				return true;
 			}
 		});

@@ -81,6 +81,20 @@ public class PacketDecoder {
 		}
 	}
 	
+	private static class DateMicroDecoder extends MicroDecoder {
+		public DateMicroDecoder(int idx) {
+			super(idx);
+		}
+		@Override
+		public void decode(ByteBuffer packet, Object[] fields) {
+			fields[m_index] = new java.util.Date(packet.getLong());
+		}
+		@Override
+		public void encode(Object[] fields, ByteBuffer packet) {
+			packet.putLong(((java.util.Date)fields[m_index]).getTime());			
+		}
+	}
+	
 	private static class FloatMicroDecoder extends MicroDecoder {
 		public FloatMicroDecoder(int idx) {
 			super(idx);
@@ -258,6 +272,9 @@ public class PacketDecoder {
 		case LONG: 
 			addLong();
 			break;
+		case DATE: 
+			addDate();
+			break;
 		case FLOAT: 
 			addFloat();
 			break;
@@ -303,6 +320,14 @@ public class PacketDecoder {
 	public void addLong() {
 		checkRemaining();
 		m_structure.add(new LongMicroDecoder(m_structure.size()));
+	}
+
+	/**
+	 * Adds a long to the list of fields
+	 */
+	public void addDate() {
+		checkRemaining();
+		m_structure.add(new DateMicroDecoder(m_structure.size()));
 	}
 
 	/**

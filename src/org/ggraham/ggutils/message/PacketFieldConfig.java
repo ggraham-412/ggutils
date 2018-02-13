@@ -90,6 +90,9 @@ public final class PacketFieldConfig {
 	public static PacketFieldConfig getLong() {
 		return new PacketFieldConfig(FieldType.LONG, DEFAULT_ENCODING, FL_UNITLENGTH);
 	}
+	public static PacketFieldConfig getDate() {
+		return new PacketFieldConfig(FieldType.DATE, DEFAULT_ENCODING, FL_UNITLENGTH);
+	}
 	public static PacketFieldConfig getFloat() {
 		return new PacketFieldConfig(FieldType.FLOAT, DEFAULT_ENCODING, FL_UNITLENGTH);
 	}
@@ -133,13 +136,14 @@ public final class PacketFieldConfig {
 		if ( typeName == null || typeName.isEmpty() ) return false;
 		if ( typeName.equals("INTEGER") ) return true;
 		if ( typeName.equals("LONG") ) return true;
+		if ( typeName.equals("DATE") ) return true;
 		if ( typeName.equals("FLOAT") ) return true;
 		if ( typeName.equals("DOUBLE") ) return true;
 		return false;
 	}
 
 	private static final Pattern s_pattern = 
-			Pattern.compile("(STRING|INTEGER|BINARY|FLOAT|DOUBLE|LONG)(\\((R|V|\\d+)(;([\\w,-]+))?\\))?$");
+			Pattern.compile("(STRING|INTEGER|BINARY|FLOAT|DOUBLE|LONG|DATE)(\\((R|V|\\d+)(;([\\w,-]+))?\\))?$");
 	
 	public static PacketFieldConfig fromString(String strVal) {
 		Matcher matcher = s_pattern.matcher(strVal);
@@ -151,6 +155,8 @@ public final class PacketFieldConfig {
 			return getInteger();
 		case LONG: 
 			return getLong();
+		case DATE: 
+			return getDate();
 		case FLOAT: 
 			return getFloat();
 		case DOUBLE: 

@@ -27,6 +27,11 @@ public interface IPacketDecoder {
 	void addInt();
 
 	/**
+	 * Adds a Date to the list of fields
+	 */
+	void addDate();
+
+	/**
 	 * Adds a long to the list of fields
 	 */
 	void addLong();
