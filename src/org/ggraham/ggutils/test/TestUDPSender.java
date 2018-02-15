@@ -130,6 +130,7 @@ public class TestUDPSender {
 	public static void usage() {
 		System.out.println("Generates and sends random packet data");
 		System.out.println("");
+		System.out.println("-b N  (optional) bunch size; send N messgaes per packet. (Default: 1)");
 		System.out.println("-c N  (optional) generate N packets and store in file given in -f");
 		System.out.println("-d d  (optional) delay between packets in milliseconds");
 		System.out.println("-f f  (required) reads packets from this csv file, one packet per row");
@@ -160,6 +161,7 @@ public class TestUDPSender {
 		ArrayList<PacketFieldConfig> fields = new ArrayList<PacketFieldConfig>();
 		boolean seq = false;
 		String filename = "";
+		int bunchSize = 1;
 		int numGen = 0;
 		int port = 5555;
 		String address = "localhost";
@@ -171,6 +173,8 @@ public class TestUDPSender {
 				String currentArg = args[i++];
 				if (currentArg.equals("-f")) {
 					filename = args[i++];
+				} else if (currentArg.equals("-b")) {
+					bunchSize = Integer.parseInt(args[i++]);
 				} else if (currentArg.equals("-c")) {
 					numGen = Integer.parseInt(args[i++]);
 				} else if (currentArg.equals("-d")) {
@@ -256,13 +260,21 @@ public class TestUDPSender {
 
 		UDPSender sender = new UDPSender(address, port);
 		int counter = 0;
-		for (Object[] toSend : values) {
+		
+		while ( counter < values.size() ) {
 			PoolItem<ByteBuffer> item = sender.getByteBuffer();
-			decoder.EncodePacket(toSend, item.getPoolItem());
+			
+			for ( int k = 0; k < bunchSize; k++ ) {
+				decoder.EncodePacket(values.get(counter + k), item.getPoolItem());				
+				if ( counter + k > values.size() ) break;
+			}
+			
 			sender.send(item);
 			if ( delay > 0 ) Thread.currentThread().sleep(delay);
-			counter++;
+			counter+=bunchSize;
+			
 		}
+		
 		System.out.println("Sent " + counter);
 
 	}
