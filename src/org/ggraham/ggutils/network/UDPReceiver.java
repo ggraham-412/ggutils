@@ -40,7 +40,7 @@ public class UDPReceiver  {
 
 	public static final int MAX_PACKET_SIZE = 1024;
 	public static final int DEFAULT_BUFFER_SIZE = 512;
-	public static final int THREAD_COUNT = 5;
+	public static final int DEFAULT_THREAD_COUNT = 5;
 	public static final int DEFAULT_POOL_INIT_COUNT = 100;
 	public static final int DEFAULT_POOL_MAX_COUNT = 200;
 	
@@ -85,12 +85,14 @@ public class UDPReceiver  {
 	    		int buffersize, 
 	    		int initPoolSize, 
 	    		int maxPoolSize, 
+	    		int threadCount,
+	    		int packetBufferSize,
 	    		boolean bigEndian,
 	    		IHandleMessage<ByteBuffer> handler) {
 		    m_handler = handler;
 		    m_address = address;
 		    m_port = port;
-		    m_executor = Executors.newFixedThreadPool(THREAD_COUNT);
+		    m_executor = Executors.newFixedThreadPool(threadCount);
 		    m_lock = new Object();
 		    m_isRunning = false;
 		    m_datagramChannel = null;
@@ -99,7 +101,7 @@ public class UDPReceiver  {
 		    if ( bigEndian ) {
 			    m_oPool = new ObjectPool<ByteBuffer>(initPoolSize, maxPoolSize, 
                     () -> {
-						ByteBuffer retval = ByteBuffer.allocate(MAX_PACKET_SIZE);
+						ByteBuffer retval = ByteBuffer.allocate(packetBufferSize);
 						retval.order(ByteOrder.BIG_ENDIAN);
 						return retval;
 					});
@@ -107,7 +109,7 @@ public class UDPReceiver  {
 		    else {
 			    m_oPool = new ObjectPool<ByteBuffer>(initPoolSize, maxPoolSize, 
 			    	() -> {
-						ByteBuffer retval = ByteBuffer.allocate(MAX_PACKET_SIZE);
+						ByteBuffer retval = ByteBuffer.allocate(packetBufferSize);
 						retval.order(ByteOrder.LITTLE_ENDIAN);
 						return retval;
 					});
@@ -232,6 +234,8 @@ public class UDPReceiver  {
 	private int m_bufferSize; 
 	private int m_poolInitSize; 
 	private int m_poolMaxSize; 
+	private int m_threadCount;
+	private int m_packetBufferSize;
 	
 	private boolean m_bigEndian;
 	
@@ -266,6 +270,22 @@ public class UDPReceiver  {
 		m_bufferSize = bufferSize;
 	}
 
+	public int getThreadCount() {
+		return m_threadCount;
+	}
+
+	public void setThreadCount(int threadCount) {
+		m_threadCount = threadCount;
+	}
+
+	public int getPacketBufferSize() {
+		return m_packetBufferSize;
+	}
+
+	public void setPacketBufferSize(int packetBufferSize) {
+		m_packetBufferSize = packetBufferSize;
+	}
+
 	public UDPReceiver (String address, int port, boolean bigEndian, IHandleMessage<ByteBuffer> handler) {
 		m_address = address;
 		m_port = port;		
@@ -274,6 +294,8 @@ public class UDPReceiver  {
 		m_bufferSize = DEFAULT_BUFFER_SIZE;
 		m_poolInitSize = DEFAULT_POOL_INIT_COUNT;
 		m_poolMaxSize = DEFAULT_POOL_MAX_COUNT;
+		m_threadCount = DEFAULT_THREAD_COUNT;
+		m_packetBufferSize = MAX_PACKET_SIZE;
 	}
 	
 	public void start() {
@@ -283,7 +305,8 @@ public class UDPReceiver  {
 			m_isRunning = true;		
 		}
 		m_listener = new NetworkListener(m_address, m_port, m_bufferSize, 
-				m_poolInitSize, m_poolMaxSize, m_bigEndian, m_handler);		
+				m_poolInitSize, m_poolMaxSize, m_threadCount, m_packetBufferSize, 
+				m_bigEndian, m_handler);		
 		m_listenerThread = new Thread(m_listener);
 		m_listenerThread.start();		
 		
